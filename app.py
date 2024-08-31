@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3.10
 
-from draft import Mode, Key
+from MusicaTheoria import Mode, Key
 import tkinter as tk
 from tkinter import ttk
 
