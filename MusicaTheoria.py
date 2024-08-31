@@ -44,6 +44,71 @@ class Mode():
         return seq
 
 
+class Scale():
+    def __init__(self, mode=None, key=None) -> None:
+        self.mode=Mode(mode=mode)
+        self.key=Key(key=key)
+    
+    def get(self):
+        scale=[self.key.get()[i] if self.mode.get()[i]==1 else None for i in range(len(self.mode.get()))]
+        while None in scale: scale.remove(None)
+        return {'key':self.key.get(), 'mode':self.mode.get(), 'scale':scale}
+
+
+class Instrument():
+    def __init__(self, instrument=None) -> None:
+        self.instruments={
+                'guitar': Guitar,
+                'bassguitar': BassGuitar,
+                'piano': KeyInstrument
+        }
+
+
+class StringInstrument(Instrument):
+    def __init__(self, instrument=None) -> None:
+        super().__init__(instrument)
+
+    def get_fretboard(self, tuning=None, nof_frets=None):
+        if not tuning==None and not nof_frets==None:
+            pass
+
+
+
+
+class KeyInstrument(Instrument):
+    def __init__(self, instrument=None) -> None:
+        super().__init__(instrument)
+
+
+
+class Guitar(StringInstrument):
+    def __init__(self, instrument='guitar') -> None:
+        super().__init__(instrument)
+        self.tuningOptions={
+            'standard_6_string': ['E', 'A', 'D', 'G', 'B', 'E']
+        }
+        self.nofFretOptions=list(range(12,24))
+
+    def get_fretboard(self, tuning=None, nof_frets=None):
+        fretboard={t: [Scale(key=self.tuningOptions[tuning][t]).get()['key'][f] for f in [f-(12*(f//12)) for f in range(0,nof_frets)]] for t in range(len(self.tuningOptions[tuning]))}
+        return fretboard
+
+
+
+
+class BassGuitar(StringInstrument):
+    def __init__(self, instrument='bassguitar') -> None:
+        super().__init__(instrument)
+        self.tuningOptions={
+            'standard_4_string': ['E', 'A', 'D', 'G'],
+            'standard_5_string': ['B', 'E', 'A', 'D', 'G'],
+            'standard_6_string': ['B', 'E', 'A', 'D', 'G', 'C']
+        }
+
+class Piano(KeyInstrument):
+    def __init__(self, instrument='piano') -> None:
+        super().__init__(instrument)
+
 
 
 if __name__=="__main__":
