@@ -15,13 +15,24 @@ class Viewer(tk.Tk):
         self.keys=list(Key().keys.keys())
         self.instruments=list(Instrument().instruments.keys())
 
-        self.frm_settings=SettingsFrame(self)
-        self.frm_circle=CircleFrame(self)
-        self.frm_intrument=InstrumentFrame(self)
+        self.settingsColumn=tk.Frame(self)
+        self.settingsColumn.root=self
+        self.settingsColumn.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.graphicsColumn=tk.Frame(self)
+        self.graphicsColumn.root=self
+        self.graphicsColumn.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.utilityColumn=tk.Frame(self)
+        self.utilityColumn.root=self
+        self.utilityColumn.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        self.frm_settings.pack(padx=10,  pady=10)
-        self.frm_circle.pack(padx=10, pady=10)
-        self.frm_intrument.pack(side=tk.RIGHT, padx=10, pady=10)
+
+        self.frm_settings=SettingsFrame(self.settingsColumn)
+        self.frm_circle=CircleFrame(self.settingsColumn)
+        self.frm_intrument=InstrumentFrame(self.graphicsColumn)
+
+        self.frm_settings.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10,  pady=10)
+        self.frm_circle.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=10)
+        self.frm_intrument.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=10)
     
     def generate(self):
         settings=self.frm_settings.get_settings()
@@ -37,7 +48,7 @@ class Viewer(tk.Tk):
 class SettingsFrame(tk.Frame):
     def __init__(self, parent):
         self.parent=parent
-        self.root=parent
+        self.root=self.parent.root
         super().__init__(self.parent)
 
         self.lbl_mode=tk.Label(self, text="Mode: ")
@@ -63,15 +74,16 @@ class SettingsFrame(tk.Frame):
 class CircleFrame(tk.Frame):
     def __init__(self, parent):
         self.parent=parent
+        self.root=self.parent.root
         super().__init__(self.parent)
-        for i in range(len(self.parent.keys)):
-            setattr(self, f'lbl_{i}', tk.Label(self, text=self.parent.keys[i]))
+        for i in range(len(self.root.keys)):
+            setattr(self, f'lbl_{i}', tk.Label(self, text=self.root.keys[i]))
             getattr(self, f'lbl_{i}').pack()
         self.update()
     
     def update(self, event=None):
-        scale_dict=self.parent.generate()
-        for i in range(len(self.parent.keys)):
+        scale_dict=self.root.generate()
+        for i in range(len(self.root.keys)):
             #print(f'i: {i} \nkeys: {self.parent.keys} \nrangelenkeys: {range(len(self.parent.keys))}')
             getattr(self, f'lbl_{i}')['text']=scale_dict['key'][i]
             getattr(self, f'lbl_{i}')['fg']='black' if scale_dict['mode'][i]==1 else 'grey'
