@@ -124,14 +124,14 @@ class GuitarView(tk.Frame):
         self.sel_tuning.bind("<<ComboboxSelected>>", self.update)
 
         self.nofFretOptions=list(self.instrument.nofFretOptions)
-        self.var_nofFrets=tk.IntVar(value=self.nofFretOptions[0])
+        self.var_nofFrets=tk.IntVar(value=20)
         self.sel_nofFrets=ttk.Combobox(self,  textvariable=self.var_nofFrets, values=self.nofFretOptions)
         self.sel_nofFrets.bind("<<ComboboxSelected>>", self.update)
 
         self.sel_tuning.pack()
         self.sel_nofFrets.pack()
 
-        self.figure=Figure()
+        self.figure=Figure(figsize=[16,4])
         self.canvas=FigureCanvasTkAgg(self.figure, self)
         self.canvas.draw()
         self.ax=self.figure.add_subplot()
@@ -150,24 +150,47 @@ class GuitarView(tk.Frame):
         fretboard=self.instrument.get_fretboard(tuning, nofFrets)
         scale=self.root.generate()
 
-
-        fretPositions=range(nofFrets)
-        fretIntermediatePositions=[-fretPositions[1]]+[(fretPositions[f]+fretPositions[f+1])/2 for f in range(len(fretPositions)-1)]
+        k=2**(1/24)
+        
+        fretPositions=[1-1/(k**n) for n in range(nofFrets)]
+        fretIntermediatePositions=[(fretPositions[0]-fretPositions[1])/2]+[(fretPositions[f]+fretPositions[f+1])/2 for f in range(len(fretPositions)-1)]
 
         nofString=len(fretboard.keys())
-        for f in fretPositions:
-            self.ax.plot([f, f], [0, nofString+1], 'grey')
+        stringPositions=[i+1/2 for i in range(0,nofString)]
+        halfNeckwidthPosition=(min(stringPositions)+max(stringPositions))/2
+
+        for i in range(len(fretPositions)):
+            f=fretPositions[i]
+            self.ax.plot([f, f], [0, nofString], 'k', alpha=0.75)
+            self.ax.text(f, 0, f'{i}', horizontalalignment='center', verticalalignment='top')
+
+        for i in range(len(stringPositions)):
+            s=stringPositions[i]
+            self.ax.plot([fretIntermediatePositions[0],fretIntermediatePositions[12]*2], [s,s], 'k', linewidth=nofString+1-i, alpha=0.5)
         
         for string in fretboard.keys():
             for fret in range(len(fretboard[string])):
                 #print(f'string: {string}, fret:  {fret}, note: {fretboard[string][fret]}')
                 note=fretboard[string][fret]
                 inScale=note in scale['scale']
-                self.ax.text(fretIntermediatePositions[fret], string+1, note, horizontalalignment='center', verticalalignment='center', bbox=dict(facecolor='green' if inScale else 'red', alpha=0.5))
+                if inScale:
+                    self.ax.text(fretIntermediatePositions[fret], stringPositions[string], note, horizontalalignment='center', verticalalignment='center', bbox=dict(facecolor='green', alpha=1))
+                else:
+                    self.ax.text(fretIntermediatePositions[fret], stringPositions[string], note, horizontalalignment='center', verticalalignment='center', alpha=0.75)
             
+        fretmarkers=['s' if f-12*(f//12) in [3,5,7,9] else 'd' if f-12*(f//12)==0 and f!=0 else '' for f in range(nofFrets)]
+        for f in range(nofFrets):
+            xpos=fretIntermediatePositions[f]
+            ypos=halfNeckwidthPosition
+            if fretmarkers[f]=='s':
+                self.ax.text(fretIntermediatePositions[f], halfNeckwidthPosition, '•', horizontalalignment='center', verticalalignment='center', fontsize=24, alpha=0.5)
+            elif fretmarkers[f]=='d':
+                self.ax.text(fretIntermediatePositions[f], halfNeckwidthPosition, '••', horizontalalignment='center', verticalalignment='center', fontsize=24, alpha=0.5)
+            else:
+                pass
+           
 
-
-        
+        self.figure.set_facecolor('grey')
         self.canvas.draw()
         
 
