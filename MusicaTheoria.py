@@ -87,7 +87,7 @@ class Guitar(StringInstrument):
         self.tuningOptions={
             'standard_6_string': ['E', 'A', 'D', 'G', 'B', 'E']
         }
-        self.nofFretOptions=list(range(12,24))
+        self.nofFretOptions=list(range(13,30))
 
     def get_fretboard(self, tuning=None, nof_frets=None):
         fretboard={t: [Scale(key=self.tuningOptions[tuning][t]).get()['key'][f] for f in [f-(12*(f//12)) for f in range(0,nof_frets)]] for t in range(len(self.tuningOptions[tuning]))}
