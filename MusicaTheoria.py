@@ -1,4 +1,28 @@
 
+class Measure():
+    def __init__(self) -> None:
+        ## measures, bars or timesignatures. The first number deflects how many beats there are per measure/bar, the second number tells what note is beating.
+        self.measures=['2/4', '3/4', '4/4', '6/8']
+
+    def get(self):
+        return self.measures
+
+class Division():
+    def __init__(self) -> None:
+        ## division of the timeline 
+        self.divisions={
+            'semibreve': 1/1,
+            'minims': 1/2,
+            'crotchets': 1/4,
+            'quavers': 1/8,
+            'semiquavers': 1/16,
+            'demisemiquavers': 1/32
+        }
+
+    def get(self):
+        return self.divisions
+
+
 class Key():
     def __init__(self, key=None) -> None:
         self.keys={'C':0, 'C♯/D♭':1, 'D':2, 'D♯/E♭':3, 'E':4, 'F':5, 'F♯/G♭':6, 'G':7, 'G♯/A♭':8, 'A':9, 'A♯/B♭':10, 'B':11}
