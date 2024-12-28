@@ -6,6 +6,7 @@ from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 from datetime import datetime as dt
+import numpy as np
 
 class Viewer(tk.Tk):
     def __init__(self):
@@ -31,12 +32,14 @@ class Viewer(tk.Tk):
         self.frm_settings=SettingsFrame(self.settingsColumn)
         self.frm_circle=CircleFrame(self.settingsColumn)
         self.frm_intrument=InstrumentFrame(self.graphicsColumn)
+        self.frm_circletool=CircleTool(self.utilityColumn)
         self.frm_composertool=ComposerTool(self.utilityColumn)
 
         self.frm_settings.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10,  pady=10)
         self.frm_circle.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=10)
         self.frm_intrument.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=10)
-        self.frm_composertool.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+        self.frm_circletool.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=10)
+        self.frm_composertool.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=10)
     
     def generate(self):
         settings=self.frm_settings.get_settings()
@@ -46,6 +49,7 @@ class Viewer(tk.Tk):
     def update(self, event=None):
         self.frm_circle.update()
         self.frm_intrument.update()
+        self.frm_circletool.update()
 
 
 
@@ -266,6 +270,34 @@ class ComposerTool(tk.Frame):
     def update(self, event=None):
         self.set_tempo()
 
+
+
+class CircleTool(tk.Frame):
+    def __init__(self, parent):
+        self.parent=parent
+        self.root=parent.root
+        super().__init__(self.parent)
+
+        self.figure=Figure(figsize=[4,4])
+        self.canvas=FigureCanvasTkAgg(self.figure, self)
+        self.canvas.draw()
+        self.ax=self.figure.add_subplot()
+        self.toolbar=NavigationToolbar2Tk(self.canvas, self, pack_toolbar=False)
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.toolbar.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+        self.update()
+
+    def update(self, event=None):
+        self.ax.cla()
+        self.ax.set_axis_off()
+
+        scale=self.root.generate()
+        #objects=[ for i in range(len(scale['key']))]
+        
+        self.figure.set_facecolor('grey')
+        self.canvas.draw()
+        
 
 
 

@@ -77,6 +77,18 @@ class Scale():
         scale=[self.key.get()[i] if self.mode.get()[i]==1 else None for i in range(len(self.mode.get()))]
         while None in scale: scale.remove(None)
         return {'key':self.key.get(), 'mode':self.mode.get(), 'scale':scale}
+    
+
+class Interval():
+    def __init__(self, mode=None, key=None) -> None:
+        self.mode=Mode(mode=mode)
+        self.key=Key(key=key)
+        self.scale=Scale(mode=self.mode, key=self.key)
+    
+    def get(self):
+        return 
+
+
 
 
 class Instrument():
