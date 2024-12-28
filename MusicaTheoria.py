@@ -1,4 +1,28 @@
 
+class Measure():
+    def __init__(self) -> None:
+        ## measures, bars or timesignatures. The first number deflects how many beats there are per measure/bar, the second number tells what note is beating.
+        self.measures=['2/4', '3/4', '4/4', '6/8']
+
+    def get(self):
+        return self.measures
+
+class Division():
+    def __init__(self) -> None:
+        ## division of the timeline 
+        self.divisions={
+            'semibreve': 1/1,
+            'minims': 1/2,
+            'crotchets': 1/4,
+            'quavers': 1/8,
+            'semiquavers': 1/16,
+            'demisemiquavers': 1/32
+        }
+
+    def get(self):
+        return self.divisions
+
+
 class Key():
     def __init__(self, key=None) -> None:
         self.keys={'C':0, 'C♯/D♭':1, 'D':2, 'D♯/E♭':3, 'E':4, 'F':5, 'F♯/G♭':6, 'G':7, 'G♯/A♭':8, 'A':9, 'A♯/B♭':10, 'B':11}
@@ -43,6 +67,83 @@ class Mode():
         seq=[int(i) for i in str]
         return seq
 
+
+class Scale():
+    def __init__(self, mode=None, key=None) -> None:
+        self.mode=Mode(mode=mode)
+        self.key=Key(key=key)
+    
+    def get(self):
+        scale=[self.key.get()[i] if self.mode.get()[i]==1 else None for i in range(len(self.mode.get()))]
+        while None in scale: scale.remove(None)
+        return {'key':self.key.get(), 'mode':self.mode.get(), 'scale':scale}
+    
+
+class Interval():
+    def __init__(self, mode=None, key=None) -> None:
+        self.mode=Mode(mode=mode)
+        self.key=Key(key=key)
+        self.scale=Scale(mode=self.mode, key=self.key)
+    
+    def get(self):
+        return 
+
+
+
+
+class Instrument():
+    def __init__(self, instrument=None) -> None:
+        self.instruments={
+                'guitar': Guitar,
+                'bassguitar': BassGuitar,
+                'piano': KeyInstrument
+        }
+
+
+class StringInstrument(Instrument):
+    def __init__(self, instrument=None) -> None:
+        super().__init__(instrument)
+
+    def get_fretboard(self, tuning=None, nof_frets=None):
+        if not tuning==None and not nof_frets==None:
+            pass
+
+
+
+
+class KeyInstrument(Instrument):
+    def __init__(self, instrument=None) -> None:
+        super().__init__(instrument)
+
+
+
+class Guitar(StringInstrument):
+    def __init__(self, instrument='guitar') -> None:
+        super().__init__(instrument)
+        self.tuningOptions={
+            'standard_6_string': ['E', 'A', 'D', 'G', 'B', 'E']
+        }
+        self.nofFretOptions=list(range(13,30))
+
+    def get_fretboard(self, tuning=None, nof_frets=None):
+        fretboard={t: [Scale(key=self.tuningOptions[tuning][t]).get()['key'][f] for f in [f-(12*(f//12)) for f in range(0,nof_frets)]] for t in range(len(self.tuningOptions[tuning]))}
+        return fretboard
+
+
+
+
+class BassGuitar(StringInstrument):
+    def __init__(self, instrument='bassguitar') -> None:
+        super().__init__(instrument)
+        self.tuningOptions={
+            'standard_4_string': ['E', 'A', 'D', 'G'],
+            'standard_5_string': ['B', 'E', 'A', 'D', 'G'],
+            'standard_6_string': ['B', 'E', 'A', 'D', 'G', 'C']
+        }
+
+class Piano(KeyInstrument):
+    def __init__(self, instrument='piano') -> None:
+        super().__init__(instrument)
 
 
 
